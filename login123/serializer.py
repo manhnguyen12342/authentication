@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from login123.models import User
 
 class RegisterSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)

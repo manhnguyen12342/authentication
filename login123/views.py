@@ -6,24 +6,20 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from login123.models import User
 from django.contrib.auth.hashers import make_password
+from token_auth import TokenAuth
 
 
-class registerviews(APIView):
+class Registerview(APIView):
     def post(self,request):
           serializer = RegisterSerializer(data=request.data)
           serializer.is_valid(raise_exception=True)
-          name = serializer.validated_data['name']
-          email = serializer.validated_data['email']
-          password = make_password(serializer.validated_data['password'])
+          name = serializer.validated_data.get('name')
+          email = serializer.validated_data.get('email')
+          password = make_password(serializer.validated_data.get('password'))
           user = User.objects.create(name=name, email=email, password=password)
-          return Response({"message": "User registered successfully"})
-    
-    def get(self, request):
-        users = User.objects.all()
-        serializer = RegisterSerializer(users, many=True)
-        return Response(serializer.data)
+          return Response(serializer.data)
       
-class LoginViews(APIView):
+class LoginView(APIView):
     def post(self,request):
         data = request.data
         serializer = LoginSerializer(data = data)
@@ -32,24 +28,13 @@ class LoginViews(APIView):
         password = serializer.data['password']
         
         user = User.objects.filter(email = email).first()
+        if not user.check_password(password) and user is None:
+            raise AuthenticationFailed('Incorrect password or ! ')
         
-        if user is None:
-            raise AuthenticationFailed('User not found !')
-        if not user.check_password(password):
-            raise AuthenticationFailed('Incorrect password ! ')
-        payload = {
-            'id': user.id,
-            'exp':datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-            'iat':datetime.datetime.utcnow()
-        }
-        token = jwt.encode(payload, 'secret', algorithm ='HS256')
+        token = TokenAuth.create_token(user)
         
-        response = Response()
+        return Response({'token':token})
         
-        response.data ={
-            'jwt':token
-        }
-        return response
     
 class LogoutView(APIView):
     def post(self, request):

@@ -1,20 +1,13 @@
 import datetime,jwt
-from rest_framework.response import Response
-
-def create_token(user):
-    payload = {
-        'id': user.id,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-        'iat': datetime.datetime.utcnow()
-    }
+from Login.settings import SECRET_KEY
     
-    # Encode the payload to create the JWT token
-    token = jwt.encode(payload, 'secret', algorithm='HS256')
+class TokenAuth():
+      def create_token(user):
+        payload = {
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
+            'iat': datetime.datetime.utcnow()
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        return token
     
-    # Prepare the response with the JWT token
-    response = Response()
-    response.data = {
-        'jwt': token
-    }
     
-    return response
