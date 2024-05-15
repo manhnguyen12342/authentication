@@ -5,6 +5,7 @@ from login123.serializer import RegisterSerializer,LoginSerializer
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from login123.models import User
+from django.contrib.auth.hashers import make_password
 
 
 class registerviews(APIView):
@@ -13,10 +14,14 @@ class registerviews(APIView):
           serializer.is_valid(raise_exception=True)
           name = serializer.validated_data['name']
           email = serializer.validated_data['email']
-          password = serializer.validated_data['password']
+          password = make_password(serializer.validated_data['password'])
           user = User.objects.create(name=name, email=email, password=password)
           return Response({"message": "User registered successfully"})
-      
+    
+    def get(self, request):
+        users = User.objects.all()
+        serializer = RegisterSerializer(users, many=True)
+        return Response(serializer.data)
       
 class LoginViews(APIView):
     def post(self,request):
