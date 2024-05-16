@@ -17,7 +17,10 @@ class Registerview(APIView):
           email = serializer.validated_data.get('email')
           password = make_password(serializer.validated_data.get('password'))
           user = User.objects.create(name=name, email=email, password=password)
-          return Response(serializer.data)
+          if User.objects.filter(email=email).exists():
+            return Response({'error': 'email is validated.'})
+          user_serializer = RegisterSerializer(user)
+          return Response(user_serializer.data)
       
 class LoginView(APIView):
     def post(self,request):
@@ -33,9 +36,10 @@ class LoginView(APIView):
         
         token = TokenAuth.create_token(user)
         
+        
         return Response({
             'token':token,
-            'user_info': serializer.data
+            'user_info': user
             })
         
     
