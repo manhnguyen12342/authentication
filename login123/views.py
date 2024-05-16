@@ -33,7 +33,10 @@ class LoginView(APIView):
         
         token = TokenAuth.create_token(user)
         
-        return Response({'token':token})
+        return Response({
+            'token':token,
+            'user': serializer.data
+            })
         
     
 class LogoutView(APIView):
