@@ -31,7 +31,7 @@ class LoginView(APIView):
         password = serializer.data['password']
         
         user = User.objects.filter(email = email).first()
-        if not user.check_password(password) or user is None:
+        if user is None or not user.check_password(password) :
             raise AuthenticationFailed('Incorrect password or email ! ')
         
         token = TokenAuth.create_token(user)
