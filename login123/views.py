@@ -6,7 +6,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from login123.models import User
 from django.contrib.auth.hashers import make_password
-from token_auth import TokenAuth
+from common.token_auth import TokenAuth
 
 
 class Registerview(APIView):
@@ -29,13 +29,13 @@ class LoginView(APIView):
         
         user = User.objects.filter(email = email).first()
         if not user.check_password(password) or user is None:
-            raise AuthenticationFailed('Incorrect password or ! ')
+            raise AuthenticationFailed('Incorrect password or email ! ')
         
         token = TokenAuth.create_token(user)
         
         return Response({
             'token':token,
-            'user': serializer.data
+            'user_info': serializer.data
             })
         
     
