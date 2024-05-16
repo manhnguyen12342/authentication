@@ -1,6 +1,6 @@
 import datetime,jwt
-from Login.settings import SECRET_KEY
-from login123.models import User
+from login.settings import SECRET_KEY
+from authentication.models import User
     
 class TokenAuth():
       def create_token(user):
