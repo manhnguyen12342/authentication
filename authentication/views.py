@@ -1,12 +1,13 @@
 import datetime,jwt
 from django.shortcuts import render
 from rest_framework.views import APIView
-from authentication.serializer import RegisterSerializer,LoginSerializer
+from authentication.serializer import RegisterSerializer,LoginSerializer,UserSerializer
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from authentication.models import User
 from django.contrib.auth.hashers import make_password
 from common.token_auth import TokenAuth
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class Registerview(APIView):
@@ -18,27 +19,35 @@ class Registerview(APIView):
             return Response({'error': 'Email is already in use.'})
           name = serializer.validated_data.get('name')
           email = serializer.validated_data.get('email')
-          password = serializer.validated_data.get('password')
-          user = User.objects.create(name=name, email=email, password=password)
+          raw_password = serializer.validated_data.get('password')
+          encoded_password =make_password(raw_password)
+          user = User.objects.create(name=name, email=email, password=encoded_password)
           user_serializer = RegisterSerializer(user)
           return Response(user_serializer.data)
       
 class LoginView(APIView):
     def post(self,request):
-        data = request.data
-        serializer = LoginSerializer(data = data)
+        serializer = LoginSerializer(data = request.data)
         serializer.is_valid(raise_exception=True)
-        email = serializer.data['email']
-        password = serializer.data['password']
+        email = serializer.validated_data.get('email')
+        password = serializer.validated_data.get('password')
         user = User.objects.filter(email = email).first()
         if user is None or not user.check_password(password) :
             raise AuthenticationFailed('Incorrect password or email ! ')
-        user_info =LoginSerializer(user).data
-        
         token = TokenAuth.create_token(user)
         return Response({
-            'token':token,
-            'user_info': user_info
+            'token':token
             })
-        
-    
+class LogoutView(APIView):
+    def post(self, request):
+        authorization_header = request.headers.get('Authorization')
+        if authorization_header:
+            token = authorization_header.split()[-1]  # Tách chuỗi để lấy token
+            try:
+                # Đưa token vào danh sách đen
+                RefreshToken(token).blacklist()
+                return Response({'message': 'Logged out successfully'})
+            except Exception as e:
+                return Response({'error': 'Invalid token'})
+        else:
+            return Response({'error': 'Authorization header not provided'})

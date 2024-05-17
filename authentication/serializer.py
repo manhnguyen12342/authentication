@@ -10,3 +10,8 @@ class RegisterSerializer(serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=100)
+    
+
+class UserSerializer(serializers.Serializer):
+    email = serializers.CharField(max_length=255)
+    user = LoginSerializer()
