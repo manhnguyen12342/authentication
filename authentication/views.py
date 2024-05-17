@@ -42,10 +42,3 @@ class LoginView(APIView):
             })
         
     
-class LogoutView(APIView):
-    def post(self, request):
-        response = Response()
-        response.data = {
-            'message': 'success'
-        }
-        return response
