@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'login123',
+    'authentication',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken'
@@ -38,7 +38,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'Login.urls'
+
+ROOT_URLCONF = 'login.urls'
 
 TEMPLATES = [
     {
@@ -56,7 +57,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Login.wsgi.application'
+WSGI_APPLICATION = 'login.wsgi.application'
 
 
 # Database
