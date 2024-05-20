@@ -8,6 +8,7 @@ from authentication.models import User
 from django.contrib.auth.hashers import make_password
 from common.token_auth import TokenAuth
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.exceptions import ValidationError
 
 
 class Registerview(APIView):
@@ -41,13 +42,17 @@ class LoginView(APIView):
 class LogoutView(APIView):
     def post(self, request):
         authorization_header = request.headers.get('Authorization')
-        if authorization_header:
-            token = authorization_header.split()[-1]  # Tách chuỗi để lấy token
-            try:
-                # Đưa token vào danh sách đen
-                RefreshToken(token).blacklist()
-                return Response({'message': 'Logged out successfully'})
-            except Exception as e:
-                return Response({'error': 'Invalid token'})
-        else:
-            return Response({'error': 'Authorization header not provided'})
+        
+        if not authorization_header:
+            raise ValidationError({'error': 'Authorization header not provided'})
+
+        token = authorization_header.split()[-1]  # Tách chuỗi để lấy token
+        
+        try:
+            # Đưa token vào danh sách đen
+            RefreshToken(token).blacklist()
+            response_data = {'message': 'Logged out successfully'}
+        except Exception as e:
+            raise ValidationError({'error': 'Invalid token'})
+
+        return Response(response_data)
