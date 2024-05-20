@@ -19,3 +19,8 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'email'
 
 
+class RevokedToken(models.Model):
+    token = models.CharField(max_length=500)
+    revoked_at = models.DateTimeField(auto_now_add=True)
+    
+

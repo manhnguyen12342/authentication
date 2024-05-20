@@ -17,7 +17,7 @@ class Registerview(APIView):
           serializer.is_valid(raise_exception=True)
           email = serializer.validated_data.get('email')
           if User.objects.filter(email=email).exists():
-            return Response({'error': 'Email is already in use.'})
+            raise Exception({'error': 'Email is already in use.'})
           name = serializer.validated_data.get('name')
           email = serializer.validated_data.get('email')
           raw_password = serializer.validated_data.get('password')
@@ -44,15 +44,14 @@ class LogoutView(APIView):
         authorization_header = request.headers.get('Authorization')
         
         if not authorization_header:
-            raise ValidationError({'error': 'Authorization header not provided'})
+            return Response({'error': 'Authorization header not found'})
 
-        token = authorization_header.split()[-1]  # Tách chuỗi để lấy token
-        
-        try:
-            # Đưa token vào danh sách đen
-            RefreshToken(token).blacklist()
-            response_data = {'message': 'Logged out successfully'}
-        except Exception as e:
-            raise ValidationError({'error': 'Invalid token'})
+        if len(authorization_header.split()) != 2:
+            return Response({'error': 'Invalid Authorization header format'})
 
-        return Response(response_data)
+        token = authorization_header.split()[1]
+
+        # Blacklist the token
+        TokenAuth.blacklist_token(token)
+
+        return Response({'message': 'Logout successful'})
