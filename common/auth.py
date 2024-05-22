@@ -10,10 +10,11 @@ class JWTAuthentication(BaseAuthentication):
 
         if not authorization_header:
             return None
+        token = authorization_header.split(' ')[1]
 
         if len(authorization_header) < 2:
             raise AuthenticationFailed('Invalid Authentication')
-        token = authorization_header.split(' ')[1]
+        
         try:
             payload = TokenAuth.verify_token(token)
             user = User.objects.get(email=payload['email'])

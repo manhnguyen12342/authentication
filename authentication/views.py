@@ -51,7 +51,6 @@ class LogoutView(APIView):
 
         token = authorization_header.split()[1]
 
-        # Blacklist the token
         TokenAuth.blacklist_token(token)
 
         return Response({'message': 'Logout successful'})

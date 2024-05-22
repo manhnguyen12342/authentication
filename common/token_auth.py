@@ -1,7 +1,6 @@
 import datetime,jwt
 from login.settings import SECRET_KEY
-from authentication.models import User
-from rest_framework_simplejwt.tokens import BlacklistedToken
+from authentication.models import User,BlacklistedToken
     
 class TokenAuth():
       def create_token(user):

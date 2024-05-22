@@ -1,5 +1,7 @@
 import uuid 
 from django.db import models
+from django.conf import settings
+
 
 from django.contrib.auth.models import AbstractBaseUser
 
@@ -19,8 +21,7 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'email'
 
 
-class RevokedToken(models.Model):
-    token = models.CharField(max_length=500)
-    revoked_at = models.DateTimeField(auto_now_add=True)
-    
+class BlacklistedToken(models.Model):
+    token = models.TextField()
+    blacklisted_at = models.DateTimeField(auto_now_add=True)
 
