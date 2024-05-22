@@ -15,3 +15,11 @@ class LoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.Serializer):
     email = serializers.CharField(max_length=255)
     user = LoginSerializer()
+
+class WeatherDataSerializer(serializers.Serializer):
+    owner = serializers.ForeignKey(User, on_delete=serializers.CASCADE)
+    date = serializers.DateField()
+    location = serializers.CharField(max_length=100)
+    temperature = serializers.FloatField()
+    humidity = serializers.FloatField()
+    wind_speed = serializers.FloatField()

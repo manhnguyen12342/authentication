@@ -3,15 +3,20 @@ from login.settings import SECRET_KEY
 from authentication.models import User,BlacklistedToken
     
 class TokenAuth():
-      def create_token(user):
+    
+      def create_token(User):
+          
         payload = {
-            'email' :user.email ,
+            'email' :User.email,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
             'iat': datetime.datetime.utcnow()
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        print(payload)
         return token
+    
       def verify_token(token):
+          
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             if BlacklistedToken.objects.filter(token=token).exists():
@@ -21,8 +26,9 @@ class TokenAuth():
             raise jwt.ExpiredSignatureError("Token has expired")
         except jwt.InvalidTokenError:
             raise jwt.InvalidTokenError("Invalid token")
+      
       def blacklist_token(token):
         try:
             BlacklistedToken.objects.create(token=token)
         except Exception as e:
-            pass
+            raise Exception(f"Failed to blacklist token: {token}. Error: {e}")

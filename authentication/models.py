@@ -25,3 +25,12 @@ class BlacklistedToken(models.Model):
     token = models.TextField()
     blacklisted_at = models.DateTimeField(auto_now_add=True)
 
+
+class WeatherData(models.Model):
+    date = models.DateField()
+    location = models.CharField(max_length=100)
+    temperature = models.FloatField()
+    humidity = models.FloatField()
+    wind_speed = models.FloatField()
+
+

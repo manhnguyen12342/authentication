@@ -106,10 +106,8 @@ USE_I18N = True
 USE_TZ = True
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'common.auth.JWTAuthentication', 
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication', 
+        'common.auth.JWTAuthentication',
+        'rest_framework.permissions.IsAuthenticated',
     ],
 }
 # Static files (CSS, JavaScript, Images)

@@ -1,14 +1,18 @@
-import datetime,jwt
 from django.shortcuts import render
 from rest_framework.views import APIView
-from authentication.serializer import RegisterSerializer,LoginSerializer,UserSerializer
+from rest_framework import status
+from authentication.serializer import (
+    RegisterSerializer,
+    LoginSerializer,
+    WeatherDataSerializer,
+)
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
-from authentication.models import User
+from authentication.models import User, WeatherData
 from django.contrib.auth.hashers import make_password
 from common.token_auth import TokenAuth
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsOwnerOrReadOnly
 
 
 class Registerview(APIView):
@@ -54,3 +58,59 @@ class LogoutView(APIView):
         TokenAuth.blacklist_token(token)
 
         return Response({'message': 'Logout successful'})
+
+class CreateWeatherData(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        weather_data = WeatherData.objects.all()
+        serializer = WeatherDataSerializer(weather_data, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = WeatherDataSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(owner=request.user)
+        return Response(serializer.data)
+
+    
+
+class GetDataDetail(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    def get_object(self, pk):
+        try:
+            return WeatherData.objects.get(pk=pk)
+        except WeatherData.DoesNotExist:
+            raise Exception("Not found")
+    def get(self, pk):
+        weather_data = self.get_object(pk)
+        serializer = WeatherDataSerializer(weather_data)
+        return Response(serializer.data)
+    
+    
+class UpdateWeatherData(APIView):
+    def put(self, request, pk):
+        weather_data = self.get_object(pk)
+        self.check_object_permissions(request, weather_data)
+        serializer = WeatherDataSerializer(weather_data, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+    def patch(self, request, pk):
+        weather_data = self.get_object(pk)
+        self.check_object_permissions(request, weather_data)
+        serializer = WeatherDataSerializer(weather_data, data=request.data, partial=True)
+        serializer.is_valid()
+        serializer.save()
+        return Response(serializer.data)
+    
+
+class DeleteWeatherData(APIView):
+    def delete(self, request, pk):
+        weather_data = self.get_object(pk)
+        self.check_object_permissions(request, weather_data)
+        weather_data.delete()
+        return Response("is deleted",status=status.HTTP_204_NO_CONTENT)
