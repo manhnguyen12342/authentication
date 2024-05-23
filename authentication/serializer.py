@@ -17,7 +17,6 @@ class UserSerializer(serializers.Serializer):
     user = LoginSerializer()
 
 class WeatherDataSerializer(serializers.Serializer):
-    owner = serializers.ForeignKey(User, on_delete=serializers.CASCADE)
     date = serializers.DateField()
     location = serializers.CharField(max_length=100)
     temperature = serializers.FloatField()

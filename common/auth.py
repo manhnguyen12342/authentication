@@ -9,18 +9,18 @@ class JWTAuthentication(BaseAuthentication):
         authorization_header = request.headers.get('Authorization')
 
         if not authorization_header:
-            return None
+            raise AuthenticationFailed('Error Authentication')
         
 
         if len(authorization_header) < 2:
             raise AuthenticationFailed('Invalid Authentication')
         token = authorization_header.split(' ')[1]
-        try:
-            payload = TokenAuth.verify_token(token)
-            user = User.objects.get(email=payload['email'])
-            return (user, token)
+        payload = TokenAuth.verify_token(token)
+        user = User.objects.filter(email=payload['email']).first()
+        print (user)
+        if not user or user is None:
+            raise AuthenticationFailed("not found user")
+        return (user, token)
 
-        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
-            raise AuthenticationFailed('Invalid or expired token')
         
         

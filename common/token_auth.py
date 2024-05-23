@@ -1,6 +1,8 @@
 import datetime,jwt
 from login.settings import SECRET_KEY
 from authentication.models import User,BlacklistedToken
+from rest_framework.exceptions import AuthenticationFailed
+
     
 class TokenAuth():
     
@@ -12,7 +14,6 @@ class TokenAuth():
             'iat': datetime.datetime.utcnow()
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-        print(payload)
         return token
     
       def verify_token(token):
@@ -20,12 +21,12 @@ class TokenAuth():
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             if BlacklistedToken.objects.filter(token=token).exists():
-                raise jwt.InvalidTokenError("Token has been blacklisted")
+                raise AuthenticationFailed("Token has been blacklisted")
             return payload
         except jwt.ExpiredSignatureError:
-            raise jwt.ExpiredSignatureError("Token has expired")
+            raise AuthenticationFailed("Token has expired")
         except jwt.InvalidTokenError:
-            raise jwt.InvalidTokenError("Invalid token")
+            raise AuthenticationFailed("Invalid token")
       
       def blacklist_token(token):
         try:

@@ -16,6 +16,7 @@ from rest_framework.permissions import IsOwnerOrReadOnly
 
 
 class Registerview(APIView):
+    authentication_classes=[]
     def post(self,request):
           serializer = RegisterSerializer(data=request.data)
           serializer.is_valid(raise_exception=True)
@@ -31,6 +32,8 @@ class Registerview(APIView):
           return Response(user_serializer.data)
       
 class LoginView(APIView):
+    authentication_classes=[]
+    
     def post(self,request):
         serializer = LoginSerializer(data = request.data)
         serializer.is_valid(raise_exception=True)
@@ -43,21 +46,14 @@ class LoginView(APIView):
         return Response({
             'token':token
             })
+        
+        
 class LogoutView(APIView):
     def post(self, request):
-        authorization_header = request.headers.get('Authorization')
-        
-        if not authorization_header:
-            return Response({'error': 'Authorization header not found'})
-
-        if len(authorization_header.split()) != 2:
-            return Response({'error': 'Invalid Authorization header format'})
-
-        token = authorization_header.split()[1]
-
+        token = request.auth
         TokenAuth.blacklist_token(token)
-
         return Response({'message': 'Logout successful'})
+    
 
 class CreateWeatherData(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -73,7 +69,6 @@ class CreateWeatherData(APIView):
         serializer.save(owner=request.user)
         return Response(serializer.data)
 
-    
 
 class GetDataDetail(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
