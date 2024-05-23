@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from rest_framework.views import APIView
 from rest_framework import status
 from authentication.serializer import (
@@ -11,8 +11,8 @@ from rest_framework.response import Response
 from authentication.models import User, WeatherData
 from django.contrib.auth.hashers import make_password
 from common.token_auth import TokenAuth
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.permissions import IsOwnerOrReadOnly
+from rest_framework.permissions import IsAuthenticated
+
 
 
 class Registerview(APIView):
@@ -55,57 +55,67 @@ class LogoutView(APIView):
         return Response({'message': 'Logout successful'})
     
 
-class CreateWeatherData(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+class WeatherDataListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         weather_data = WeatherData.objects.all()
         serializer = WeatherDataSerializer(weather_data, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = WeatherDataSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(owner=request.user)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class GetDataDetail(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+class WeatherDataDetailView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get_object(self, pk):
-        try:
-            return WeatherData.objects.get(pk=pk)
-        except WeatherData.DoesNotExist:
-            raise Exception("Not found")
-    def get(self, pk):
+        return get_object_or_404(WeatherData, pk=pk)
+
+    def get(self, request, pk):
         weather_data = self.get_object(pk)
         serializer = WeatherDataSerializer(weather_data)
-        return Response(serializer.data)
-    
-    
-class UpdateWeatherData(APIView):
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class WeatherDataUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, request, pk):
+        weather_data = get_object_or_404(WeatherData, pk=pk)
+        if weather_data.owner != request.user and not request.user.is_staff:
+            raise AuthenticationFailed('You do not have permission to update this record.')
+        return weather_data
+
     def put(self, request, pk):
-        weather_data = self.get_object(pk)
-        self.check_object_permissions(request, weather_data)
+        weather_data = self.get_object(request, pk)
         serializer = WeatherDataSerializer(weather_data, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
-
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, pk):
-        weather_data = self.get_object(pk)
-        self.check_object_permissions(request, weather_data)
+        weather_data = self.get_object(request, pk)
         serializer = WeatherDataSerializer(weather_data, data=request.data, partial=True)
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
-    
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-class DeleteWeatherData(APIView):
+
+class WeatherDataDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, request, pk):
+        weather_data = get_object_or_404(WeatherData, pk=pk)
+        if weather_data.owner != request.user and not request.user.is_staff:
+            raise AuthenticationFailed('You do not have permission to delete this record.')
+        return weather_data
+
     def delete(self, request, pk):
-        weather_data = self.get_object(pk)
-        self.check_object_permissions(request, weather_data)
+        weather_data = self.get_object(request, pk)
         weather_data.delete()
-        return Response("is deleted",status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)

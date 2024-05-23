@@ -27,6 +27,7 @@ class BlacklistedToken(models.Model):
 
 
 class WeatherData(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     location = models.CharField(max_length=100)
     temperature = models.FloatField()

@@ -109,6 +109,9 @@ REST_FRAMEWORK = {
         'common.auth.JWTAuthentication',
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
