@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from authentication.models import User
+from authentication.models import User,WeatherData
 
 class RegisterSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
@@ -22,3 +22,5 @@ class WeatherDataSerializer(serializers.Serializer):
     temperature = serializers.FloatField()
     humidity = serializers.FloatField()
     wind_speed = serializers.FloatField()
+    def create(self,validated_data):
+        return WeatherData.objects.create(**validated_data)

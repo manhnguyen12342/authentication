@@ -14,6 +14,6 @@ urlpatterns = [
     path('logout', LogoutView.as_view()),
     path('create',WeatherDataListCreateView.as_view()),
     path('get',WeatherDataDetailView.as_view()),
-    path('update',WeatherDataUpdateView.as_view()),
+    path('update/<int:id>',WeatherDataUpdateView.as_view()),
     path('delete',WeatherDataDeleteView.as_view()),
 ]
