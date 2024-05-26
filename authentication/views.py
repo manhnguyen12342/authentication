@@ -63,6 +63,7 @@ class WeatherDataListCreateView(APIView):
         weather_data = WeatherData.objects.all()
         serializer =WeatherDataSerializer(weather_data, many=True)
         return Response(serializer.data)
+    
 
     def post(self, request):
         serializer = WeatherDataSerializer(data=request.data)
@@ -100,27 +101,23 @@ class WeatherDataDetailView(APIView):
 
 class WeatherDataUpdateView(APIView):
     permission_classes = [IsAuthenticated]
+    def get(self,request,id):
+        Weather_id = WeatherData.objects.filter(id=id)
+        serializer = WeatherDataSerializer(Weather_id, many=True)
+        return Response(serializer.data)
 
-    def put(self, request,date):
-        weather_data = WeatherData.objects.filter(id=date)
-        serializer = WeatherDataSerializer(weather_data)
+    def put(self, request,id):
+        weather_data = WeatherData.objects.get(id=id)
+        serializer = WeatherDataSerializer(weather_data,data = request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def patch(self, request,date):
-        weather_data = WeatherData.objects.filter(id=date)
-        serializer = WeatherDataSerializer(weather_data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+        return Response({"message":"complete update"})
 
 
 class WeatherDataDeleteView(APIView):
     permission_classes = [IsAuthenticated]
     
-    def delete(self, request):
+    def delete(self, request,id):
         weather_data = WeatherData.objects.filter(id=id)
         weather_data.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message":"Delete ok"})

@@ -27,7 +27,6 @@ class BlacklistedToken(models.Model):
 
 
 class WeatherData(models.Model):
-    # id_weather = models.AutoField(primary_key=True)
     date = models.DateField()
     location = models.CharField(max_length=100)
     temperature = models.FloatField()
