@@ -14,7 +14,6 @@ from common.token_auth import TokenAuth
 from rest_framework.permissions import IsAuthenticated
 
 
-
 class Registerview(APIView):
     authentication_classes=[]
     def post(self,request):
@@ -77,26 +76,8 @@ class WeatherDataDetailView(APIView):
 
     def get(self, request):
         weather_data = WeatherData.objects.all()
-        
-        date = request.query_params.get('date', None)
-        location = request.query_params.get('location', None)
-        temperature = request.query_params.get('temperature', None)
-        humidity = request.query_params.get('humidity', None)
-        description = request.query_params.get('description', None)
-
-        if date:
-            weather_data = weather_data.filter(date=date)
-        if location:
-            weather_data = weather_data.filter(location__icontains=location)
-        if temperature:
-            weather_data = weather_data.filter(temperature=temperature)
-        if humidity:
-            weather_data = weather_data.filter(humidity=humidity)
-        if description:
-            weather_data = weather_data.filter(description__icontains=description)
-        
         serializer = WeatherDataSerializer(weather_data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
     
 
 class WeatherDataUpdateView(APIView):
