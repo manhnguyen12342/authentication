@@ -1,17 +1,14 @@
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework import status
 from authentication.serializer import (
     RegisterSerializer,
     LoginSerializer,
-    WeatherDataSerializer,
 )
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
-from authentication.models import User, WeatherData
+from authentication.models import User
 from django.contrib.auth.hashers import make_password
 from common.token_auth import TokenAuth
-from rest_framework.permissions import IsAuthenticated
 
 
 class Registerview(APIView):
@@ -55,50 +52,3 @@ class LogoutView(APIView):
         return Response({'message': 'Logout successful'})
     
 
-class WeatherDataListCreateView(APIView):
-    permission_classes = [IsAuthenticated]
-    
-    def get(self, request, format=None):
-        weather_data = WeatherData.objects.all()
-        serializer =WeatherDataSerializer(weather_data, many=True)
-        return Response(serializer.data)
-    
-
-    def post(self, request):
-        serializer = WeatherDataSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
-
-class WeatherDataDetailView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        weather_data = WeatherData.objects.all()
-        serializer = WeatherDataSerializer(weather_data, many=True)
-        return Response(serializer.data)
-    
-
-class WeatherDataUpdateView(APIView):
-    permission_classes = [IsAuthenticated]
-    def get(self,request,id):
-        Weather_id = WeatherData.objects.filter(id=id)
-        serializer = WeatherDataSerializer(Weather_id, many=True)
-        return Response(serializer.data)
-
-    def put(self, request,id):
-        weather_data = WeatherData.objects.get(id=id)
-        serializer = WeatherDataSerializer(weather_data,data = request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({"message":"complete update"})
-
-
-class WeatherDataDeleteView(APIView):
-    permission_classes = [IsAuthenticated]
-    
-    def delete(self, request,id):
-        weather_data = WeatherData.objects.filter(id=id)
-        weather_data.delete()
-        return Response({"message":"Delete ok"})
