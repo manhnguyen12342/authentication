@@ -8,6 +8,8 @@ from authentication.views import (
     WeatherDataUpdateView,
     WeatherDataDeleteView
 )
+
+
 urlpatterns = [
     path('register', Registerview.as_view()),
     path('login', LoginView.as_view()),
