@@ -8,12 +8,12 @@ class TokenAuth():
     
       def create_token(User):
           
-        payload = {
+        user_token = {
             'email' :User.email,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
             'iat': datetime.datetime.utcnow()
         }
-        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        token = jwt.encode(user_token, SECRET_KEY, algorithm='HS256')
         return token
     
       def verify_token(token):
