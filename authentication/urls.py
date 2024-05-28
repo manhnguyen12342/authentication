@@ -4,8 +4,6 @@ from authentication.views import (
     LoginView,
     LogoutView,
 )
-
-
 urlpatterns = [
     path('register', Registerview.as_view()),
     path('login', LoginView.as_view()),
