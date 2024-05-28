@@ -71,4 +71,4 @@ class WeatherDataDeleteView(APIView):
         if not weather_data :
             return Response({"message":"Invalid ID"},status=status.HTTP_404_NOT_FOUND)
         weather_data.delete()
-        return Response({"message":"Delete ok"},status=status.HTTP_204_NO_CONTENT)
+        return Response({"message":"Delete complete"},status=status.HTTP_204_NO_CONTENT)
