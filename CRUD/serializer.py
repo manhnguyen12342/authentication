@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from CRUD.models import WeatherData
 
+
 class WeatherDataSerializer(serializers.Serializer):
     date = serializers.DateField()
     location = serializers.CharField(max_length=100)

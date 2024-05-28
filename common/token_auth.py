@@ -7,7 +7,6 @@ from rest_framework.exceptions import AuthenticationFailed
 class TokenAuth():
     
       def create_token(User):
-          
         user_token = {
             'email' :User.email,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
@@ -17,7 +16,6 @@ class TokenAuth():
         return token
     
       def verify_token(token):
-          
         try:
             user_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             if BlacklistedToken.objects.filter(token=token).exists():

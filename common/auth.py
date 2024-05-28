@@ -4,6 +4,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from authentication.models import User
 from common.token_auth import TokenAuth
 
+
 class JWTAuthentication(BaseAuthentication):
     def authenticate(self, request):
         authorization_header = request.headers.get('Authorization')
