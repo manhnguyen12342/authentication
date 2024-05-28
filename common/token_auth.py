@@ -32,4 +32,4 @@ class TokenAuth():
         try:
             BlacklistedToken.objects.create(token=token)
         except Exception as e:
-            raise Exception(f"Failed to blacklist token: {token}. Error: {e}")
+            raise Exception("Failed to blacklist token:")
