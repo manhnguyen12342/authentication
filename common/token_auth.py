@@ -19,10 +19,10 @@ class TokenAuth():
       def verify_token(token):
           
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            user_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             if BlacklistedToken.objects.filter(token=token).exists():
                 raise AuthenticationFailed("Token has been blacklisted")
-            return payload
+            return user_token
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Token has expired")
         except jwt.InvalidTokenError:

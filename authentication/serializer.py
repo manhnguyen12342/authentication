@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from authentication.models import User,WeatherData
+
 
 
 class RegisterSerializer(serializers.Serializer):
