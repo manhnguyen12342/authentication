@@ -12,10 +12,10 @@ from common.token_auth import TokenAuth
 
 
 class Registerview(APIView):
-    authentication_classes=[]
+    authentication_classes = []
     def post(self,request):
-          serializer = RegisterSerializer(data=request.data)
-          serializer.is_valid(raise_exception=True)
+          serializer = RegisterSerializer(data = request.data)
+          serializer.is_valid(raise_exception = True)
           email = serializer.validated_data.get('email')
           if User.objects.filter(email=email).exists():
             raise Exception({'error': 'Email is already in use.'})
@@ -23,17 +23,17 @@ class Registerview(APIView):
           email = serializer.validated_data.get('email')
           raw_password = serializer.validated_data.get('password')
           encoded_password =make_password(raw_password)
-          user = User.objects.create(name=name, email=email, password=encoded_password)
+          user = User.objects.create(name = name, email = email, password = encoded_password)
           user_serializer = RegisterSerializer(user)
           return Response(user_serializer.data)
 
       
 class LoginView(APIView):
-    authentication_classes=[]
+    authentication_classes = []
     
     def post(self,request):
         serializer = LoginSerializer(data = request.data)
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid(raise_exception = True)
         email = serializer.validated_data.get('email')
         password = serializer.validated_data.get('password')
         user = User.objects.filter(email = email).first()
