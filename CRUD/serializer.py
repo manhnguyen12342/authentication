@@ -13,10 +13,10 @@ class WeatherDataSerializer(serializers.Serializer):
         return WeatherData.objects.create(**validated_data)
     
     def update(self, instance, validated_data):
-        instance.date = validated_data.get('date', instance.date)
-        instance.location = validated_data.get('location', instance.location)
-        instance.temperature = validated_data.get('temperature', instance.temperature)
-        instance.humidity = validated_data.get('humidity', instance.humidity)
-        instance.wind_speed = validated_data.get('wind_speed', instance.wind_speed)
-        instance.save()
-        return instance
+       instance.date = validated_data.get('date', instance.date)
+       instance.location = validated_data.get('location', instance.location)
+       instance.temperature = validated_data.get('temperature', instance.temperature)
+       instance.humidity = validated_data.get('humidity', instance.humidity)
+       instance.wind_speed = validated_data.get('wind_speed', instance.wind_speed)
+       instance.save()
+       return instance

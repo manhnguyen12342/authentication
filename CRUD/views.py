@@ -9,36 +9,24 @@ from rest_framework import status
 class WeatherDataListCreateView(APIView):
     permission_classes = [IsAuthenticated]
     
-    def get(self, request, format=None):
-        weather_data = WeatherData.objects.all()
-        serializer =WeatherDataSerializer(weather_data, many=True)
-        return Response(serializer.data)
-    
     def post(self, request):
         serializer = WeatherDataSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response("update complete", serializer.data,status=status.HTTP_201_CREATED)
+        return Response({"message":"create complete"},status=status.HTTP_201_CREATED)
 
 
 class WeatherDataDetailView(APIView):
     permission_classes = [IsAuthenticated]
     
-    def get(self, request):
+    def get(self, request, format=None):
         weather_data = WeatherData.objects.all()
-        serializer = WeatherDataSerializer(weather_data)
+        serializer =WeatherDataSerializer(weather_data, many=True)
         return Response(serializer.data)
     
 
 class WeatherDataUpdateView(APIView):
     permission_classes = [IsAuthenticated]
-
-    def get(self, request, id):
-        weather_data = WeatherData.objects.filter(id=id).first
-        if  weather_data is None :
-            return Response({"message": "InValid ID"})
-        serializer = WeatherDataSerializer(weather_data)
-        return Response(serializer.data)
 
     def put(self, request, id):
         weather_data = WeatherData.objects.filter(id=id)
@@ -47,19 +35,11 @@ class WeatherDataUpdateView(APIView):
         serializer = WeatherDataSerializer(weather_data, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({"message": "Update completed"})
+        return Response({"message": "Update completed"},status=status.HTTP_204_NO_CONTENT)
 
 
 class WeatherDataDeleteView(APIView):
     permission_classes = [IsAuthenticated]
-    
-    def get(self, request, id):
-        weather_data = WeatherData.objects.filter(id=id).first
-        if  weather_data is None :
-            return Response({"message": "InValid ID"})
-        serializer = WeatherDataSerializer(weather_data)
-        return Response(serializer.data)
-
     
     def delete(self, request,id):
         weather_data = WeatherData.objects.filter(id=id)
