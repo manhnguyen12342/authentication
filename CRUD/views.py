@@ -29,7 +29,7 @@ class WeatherDataUpdateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def put(self, request, id):
-        weather_data = WeatherData.objects.filter(id=id)
+        weather_data = WeatherData.objects.filter(id=id).first()    
         if not weather_data :
             return Response({"message":"Invalid ID"},status=status.HTTP_404_NOT_FOUND)
         serializer = WeatherDataSerializer(weather_data, data=request.data)
@@ -42,7 +42,7 @@ class WeatherDataDeleteView(APIView):
     permission_classes = [IsAuthenticated]
     
     def delete(self, request,id):
-        weather_data = WeatherData.objects.filter(id=id)
+        weather_data = WeatherData.objects.filter(id=id).first()
         if not weather_data :
             return Response({"message":"Invalid ID"},status=status.HTTP_404_NOT_FOUND)
         weather_data.delete()
