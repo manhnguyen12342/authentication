@@ -13,7 +13,7 @@ class WeatherDataListCreateView(APIView):
         serializer = WeatherDataSerializer(data = request.data)
         serializer.is_valid(raise_exception = True)
         serializer.save()
-        return Response({"message":"create complete"},status = status.HTTP_201_CREATED)
+        return Response({"message":"create complete"}, status = status.HTTP_201_CREATED)
 
 
 class WeatherDataDetailView(APIView):
@@ -31,11 +31,11 @@ class WeatherDataUpdateView(APIView):
     def put(self, request, id):
         weather_data = WeatherData.objects.filter(id = id).first()
         if not weather_data :
-            return Response({"message":"Invalid ID"},status = status.HTTP_404_NOT_FOUND)
+            return Response({"message":"Invalid ID"}, status = status.HTTP_404_NOT_FOUND)
         serializer = WeatherDataSerializer(weather_data, data = request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({"message": "Update completed"},status = status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Update completed"}, status = status.HTTP_204_NO_CONTENT)
 
 
 class WeatherDataDeleteView(APIView):
@@ -44,6 +44,6 @@ class WeatherDataDeleteView(APIView):
     def delete(self, request,id):
         weather_data = WeatherData.objects.filter(id = id).first()
         if not weather_data :
-            return Response({"message":"Invalid ID"},status = status.HTTP_404_NOT_FOUND)
+            return Response({"message":"Invalid ID"}, status = status.HTTP_404_NOT_FOUND)
         weather_data.delete()
-        return Response({"message":"Delete complete"},status = status.HTTP_204_NO_CONTENT)
+        return Response({"message":"Delete complete"}, status = status.HTTP_204_NO_CONTENT)
