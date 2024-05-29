@@ -14,18 +14,21 @@ from common.token_auth import TokenAuth
 class Registerview(APIView):
     authentication_classes = []
     def post(self,request):
-          serializer = RegisterSerializer(data = request.data)
-          serializer.is_valid(raise_exception = True)
-          email = serializer.validated_data.get('email')
-          if User.objects.filter(email=email).exists():
-            raise Exception({'error': 'Email is already in use.'})
-          name = serializer.validated_data.get('name')
-          email = serializer.validated_data.get('email')
-          raw_password = serializer.validated_data.get('password')
-          encoded_password =make_password(raw_password)
-          user = User.objects.create(name = name, email = email, password = encoded_password)
-          user_serializer = RegisterSerializer(user)
-          return Response(user_serializer.data)
+        
+        serializer = RegisterSerializer(data = request.data)
+        serializer.is_valid(raise_exception = True)
+        email = serializer.validated_data.get('email')
+        
+        if User.objects.filter(email=email).exists():
+           raise Exception({'error': 'Email is already in use.'})
+        
+        name = serializer.validated_data.get('name')
+        email = serializer.validated_data.get('email')
+        raw_password = serializer.validated_data.get('password')
+        encoded_password =make_password(raw_password)
+        user = User.objects.create(name = name, email = email, password = encoded_password)
+        user_serializer = RegisterSerializer(user)
+        return Response(user_serializer.data)
 
       
 class LoginView(APIView):
@@ -37,8 +40,10 @@ class LoginView(APIView):
         email = serializer.validated_data.get('email')
         password = serializer.validated_data.get('password')
         user = User.objects.filter(email = email).first()
+        
         if user is None or not user.check_password(password) :
             raise AuthenticationFailed('Incorrect password or email ! ')
+        
         token = TokenAuth.create_token(user)
         return Response({
             'token':token
@@ -47,6 +52,7 @@ class LoginView(APIView):
         
 class LogoutView(APIView):
     def post(self, request):
+        
         token = request.auth
         TokenAuth.blacklist_token(token)
         return Response({'message': 'Logout successful'})
